@@ -1,0 +1,5 @@
+{
+  "name": "prompt-feld",
+  "owner": { "name": "prompt-feld" },
+  "plugins": [{ "name": "prompt-feld", "source": "./" }]
+}
