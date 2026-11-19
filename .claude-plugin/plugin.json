@@ -1,1 +1,1 @@
-{ "name": "prompt-feld", "version": "0.1.0", "description": "Ein Feld über dem Chat-Eingabefeld, das Prompt-Entwürfe optimiert und ins Chatfeld setzt.", "license": "MIT", "types": "./types/index.d.ts" }
+{ "name": "prompt-feld", "version": "0.2.0", "description": "Ein Feld über dem Chat-Eingabefeld, das Prompt-Entwürfe optimiert und ins Chatfeld setzt.", "license": "MIT", "types": "./types/index.d.ts" }

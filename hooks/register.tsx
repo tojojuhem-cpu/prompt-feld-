@@ -32,32 +32,46 @@ async function optimize($: EngineInterface, draft: string) {
 }
 
 
+const PANE = 'prompt-feld'
+
+async function drawField($: EngineInterface, e: Parameters<EngineInterface['ui']['resolve']>[0]) {
+  const { Box, Text, Input, Button } = $.ui.resolve(e)
+  const isBusy = await read($, busy)
+  const msg = await read($, status)
+
+  return (
+    <Box flexDirection="column">
+      <Input
+        key="entwurf"
+        label="✨ Prompt-Optimierer: "
+        placeholder="Groben Entwurf tippen, Enter = optimieren"
+        submitLabel="optimieren"
+        rows={2}
+        onSubmit={(value: string) => { void optimize($, value) }}
+      />
+      <Box>
+        <Button
+          key="chatfeld"
+          label={isBusy ? 'Optimiere …' : 'Text im Chatfeld optimieren'}
+          onPress={async () => { const box = await $.prompt.read(); await optimize($, box.text) }}
+        />
+        {msg ? <Text dimColor> {msg}</Text> : null}
+      </Box>
+    </Box>
+  )
+}
+
 export const register: Register = on => {
+  on('session.start', async ($, e, next) => {
+    $.ui.toast('Prompt-Feld ist geladen ✨')
+    void $.ui.open({ id: PANE, title: 'Prompt-Optimierer', placement: 'widget' })
+    return next(e)
+  })
+
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
     if (e.props.hasSurvey) return next(e)
-    const { Box, Text, Input, Button } = $.ui.resolve(e)
-    const isBusy = await read($, busy)
-    const msg = await read($, status)
-
-    return (
-      <Box flexDirection="column">
-        <Input
-          key="entwurf"
-          label="✨ Prompt-Optimierer: "
-          placeholder="Groben Entwurf tippen, Enter = optimieren"
-          submitLabel="optimieren"
-          rows={2}
-          onSubmit={(value: string) => { void optimize($, value) }}
-        />
-        <Box>
-          <Button
-            key="chatfeld"
-            label={isBusy ? 'Optimiere …' : 'Text im Chatfeld optimieren'}
-            onPress={async () => { const box = await $.prompt.read(); await optimize($, box.text) }}
-          />
-          {msg ? <Text dimColor> {msg}</Text> : null}
-        </Box>
-      </Box>
-    )
+    return drawField($, e)
   })
+
+  on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => drawField($, e))
 }
